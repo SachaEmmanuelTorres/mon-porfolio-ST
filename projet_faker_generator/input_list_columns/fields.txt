@@ -1,0 +1,11 @@
+name
+address
+email
+phone_number
+job
+company
+date_of_birth
+ssn
+credit_card_number
+credit_card_provider
+credit_card_expire

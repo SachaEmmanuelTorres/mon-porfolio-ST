@@ -1,0 +1,13 @@
+_observations: 200
+type: word
+manufacturer: company
+model: word
+seating_capacity: random_int
+range_of_flight: random_int
+max_speed: random_int
+engine_type: word
+production_year: year
+last_maintenance_date: date
+msn: unique.random_int
+registration_number: unique.random_int
+status: random_element(['active', 'inactive', 'under_maintenance'])

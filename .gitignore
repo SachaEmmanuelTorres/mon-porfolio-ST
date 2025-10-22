@@ -1,9 +1,5 @@
 # Fichiers de configuration du projet à ignorer
 gemini.md
-git_portfolio.md
-plan_portfolio.md
-colors_tags.md
-colors-save.md
 
 # Python
 __pycache__/
@@ -114,3 +110,6 @@ vignettes/*.pdf
 .httr-oauth
 rsconnect/
 *.ini
+*.pdf
+documentation/
+scripts/
