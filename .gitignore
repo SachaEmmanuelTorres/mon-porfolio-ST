@@ -1,0 +1,9 @@
+# Fichier d'environnement contenant les secrets
+.env
+# Dossier de l'environnement virtuel
+.env/
+
+documentation/
+src/__pycache__/constants.cpython-312.pyc
+src/__pycache__/obs_twitch.cpython-312.pyc
+__pycache__/constants.cpython-312.pyc
