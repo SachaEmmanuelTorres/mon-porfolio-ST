@@ -125,7 +125,7 @@ Ces deux scripts (lancer_enregistrement.sh et test_obs_launch.sh) doivent être 
 
 Exemple de structure : 
 ``` +/home/sacha/Bureau/projets/
-├── lancer_enregistrement.sh
+├── launch_recording.sh
 ├── test_obs_launch.sh 
 └── projet_obs/
     ├── main.py
@@ -136,7 +136,7 @@ Exemple de structure :
 Avant de pouvoir utiliser ces scripts, vous devez leur donner la permission d'exécution. 
 
 Ouvrez un terminal et exécutez les commandes suivantes :
- bash  chmod +x /home/sacha/Bureau/projets/lancer_enregistrement.sh 
+ bash  chmod +x /home/sacha/Bureau/projets/launch_recording.sh 
        chmod +x /home/sacha/Bureau/projets/test_obs_launch.sh 
 
  Une fois ces étapes réalisées, vous pouvez utiliser lancer_enregistrement.sh dans une tâche cron pour une automatisation complète.
