@@ -3,7 +3,7 @@
 # Dossier de l'environnement virtuel
 .env/
 
+# Dossiers de documentation et de cache
 documentation/
-src/__pycache__/constants.cpython-312.pyc
-src/__pycache__/obs_twitch.cpython-312.pyc
-__pycache__/constants.cpython-312.pyc
+__pycache__/
+*.pyc
