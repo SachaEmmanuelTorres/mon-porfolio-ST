@@ -117,8 +117,9 @@ Pour une utilisation entièrement automatisée sous Linux, deux scripts shell so
 ### Scripts d'automatisation 
 lancer_enregistrement.sh: Ce script principal d'automatisation vérifie si OBS Studio est en cours d'exécution, le lance si nécessaire, puis exécute le script Python main.py. Il est conçu pour être appelé par une tâche planifiée (comme cron). 
 
-+- test_obs_launch.sh: Un script de test simple pour vérifier que la commande de lancement d'OBS Studio fonctionne correctement sur votre système. 
-+ +
+test_obs_launch.sh: Un script de test simple pour vérifier que la commande de lancement d'OBS Studio fonctionne correctement sur votre système. 
+
+
 ### Placement des scripts 
 
 Ces deux scripts (lancer_enregistrement.sh et test_obs_launch.sh) doivent être placés dans le répertoire parent du dossier projet_obs.
