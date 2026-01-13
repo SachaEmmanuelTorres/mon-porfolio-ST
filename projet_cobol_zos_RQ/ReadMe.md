@@ -38,6 +38,7 @@ Fichiers clés
 	Installation 3270, prise en main ISPF/JCL et procédures pratiques.
 
 Prochaines étapes (suggestions)
+- mise en place du vpn pour acces a vm IBM Z/os ou cobol est installe.
 - Tester les exemples fournis dans un environnement z/OS ou simulateur.
 - Adapter les tableaux de taux et fichiers d'entrée aux jeux de données
 	réels pour valider la logique fiscale.
