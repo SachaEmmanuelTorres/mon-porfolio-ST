@@ -1,9 +1,10 @@
 import qrcode
 
 # --- CONFIGURATION ---
-# URLs vers vos CVs sur GitHub
-url_cv_fr = "https://github.com/SachaEmmanuelTorres/mon-porfolio-ST/blob/ac51f977e7cb60251b799fd9f9b778883702ca0f/CV_Sacha_Torres_20252_main_os.pdf"
-url_resume_en = "https://github.com/SachaEmmanuelTorres/mon-porfolio-ST/blob/ac51f977e7cb60251b799fd9f9b778883702ca0f/Resume_Sacha_Torres_2025_Eng_main_os.pdf"
+# URLs directes via GitHub Pages (plus rapide et propre pour mobile)
+# NOTE : Assurez-vous que ces fichiers PDF sont bien présents à la RACINE de votre dépôt GitHub.
+url_cv_fr = "https://sachaemmanueltorres.github.io/mon-porfolio-ST/CV_Sacha_Torres_20252_main_os.pdf"
+url_resume_en = "https://sachaemmanueltorres.github.io/mon-porfolio-ST/Resume_Sacha_Torres_2025_Eng_main_os.pdf"
 
 def creer_qr(url, nom_fichier):
     """
@@ -24,7 +25,7 @@ def creer_qr(url, nom_fichier):
     print(f"✅ Fichier créé : {nom_fichier}")
 
 if __name__ == "__main__":
-    print("🚀 Génération des QR Codes pour les CVs...")
+    print("🚀 Génération des QR Codes pour les CVs (URLs GitHub Pages)...")
     
     # Génération des deux fichiers
     creer_qr(url_cv_fr, "qr_cv_fr.png")
