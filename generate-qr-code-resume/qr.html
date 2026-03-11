@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacha Torres - CV QR Codes</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --primary-color: #2c3e50;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .qr-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .qr-card img {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+        .label {
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Sacha Torres</h1>
+        <p class="subtitle">Scannez pour obtenir mon CV</p>
+
+        <div class="qr-section">
+            <!-- Section Français -->
+            <div class="qr-card">
+                <img src="qr_cv_fr.png" alt="QR Code CV Français">
+                <div class="label">Français (FR)</div>
+            </div>
+
+            <!-- Section Anglais -->
+            <div class="qr-card">
+                <img src="qr_resume_en.png" alt="QR Code Resume English">
+                <div class="label">English (EN)</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            mon-porfolio-ST &bull; Sacha Emmanuel Torres
+        </div>
+    </div>
+
+</body>
+</html>
