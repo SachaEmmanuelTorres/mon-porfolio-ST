@@ -67,4 +67,9 @@ Bienvenue sur mon portfolio de projets. Vous y trouverez une collection de mes t
 **Génération de fichiers de data sous plusieurs forme de fichiers**
 **A partir d’un serveur localhost FastApi a partir**
 **d’une liste de noms de colonnes , du nombres de lignes désire**
-**et du format de fichier**    
+**et du format de fichier**
+
+### QR Code Resume Landing Page
+**Génération de QR codes pour l'accès rapide aux CV (FR/EN) et création d'une landing page mobile optimisée.**
+👉 **[Voir mes QR Codes (Mobile)](https://sachaemmanueltorres.github.io/mon-porfolio-ST/generate-qr-code-resume/qr.html)**
+    
