@@ -1,0 +1,56 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: ms_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dataeng
+      POSTGRES_PASSWORD: dataeng2024
+      POSTGRES_DB: crud_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Script d'init : cree les bases et tables au premier demarrage
+      - ./sql/init:/docker-entrypoint-initdb.d
+      # Dossier CSV : deposer ici les fichiers pour COPY FROM/TO
+      - ./sql/csv_data:/csv_data
+      # Dossier scripts SQL : monter pour executer via psql
+      - ./sql/scripts:/sql_scripts
+      # Persistance des donnees
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dataeng"]
+      interval: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ms_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ms.local
+      PGADMIN_DEFAULT_PASSWORD: admin2024
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  sqlweb:
+    build: ./web
+    container_name: ms_sqlweb
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  pgadmin_data:

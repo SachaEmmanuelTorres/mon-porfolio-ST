@@ -121,3 +121,9 @@ scripts/# Fichier d'environnement contenant les secrets
 documentation/
 __pycache__/
 *.pyc
+
+# Data Engineer prep - specific
+*.~lock.*
+pgdata/
+pgadmin_data/
+sql/csv_data/export_*.csv

@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Workbench - Data Engineer Exercises</title>
+
+<!-- CodeMirror 5 from CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/hint/show-hint.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/hint/sql-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js"></script>
+
+<style>
+/* ====== CSS Reset & Variables ====== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-hover: #21262d;
+  --bg-active: #282e36;
+  --border: #30363d;
+  --border-light: #3d444d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --accent: #58a6ff;
+  --accent-hover: #79c0ff;
+  --green: #3fb950;
+  --green-dim: #1a4023;
+  --red: #f85149;
+  --red-dim: #3d1418;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+html, body { height: 100%; font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-primary); }
+
+/* ====== Layout ====== */
+.app {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  grid-template-rows: 48px 1fr;
+  grid-template-areas:
+    "header header header"
+    "sidebar main exercises";
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ====== Header ====== */
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  z-index: 100;
+}
+.header .logo {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header .logo svg { width: 20px; height: 20px; fill: var(--accent); }
+.header .db-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header .db-selector label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.header select {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+.header select:focus { border-color: var(--accent); }
+
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ====== Buttons ====== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.btn-primary { background: #238636; border-color: #2ea043; color: #fff; }
+.btn-primary:hover { background: #2ea043; }
+.btn-accent { background: #1f6feb; border-color: #388bfd; color: #fff; }
+.btn-accent:hover { background: #388bfd; }
+.btn-danger { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: #5a1a1f; }
+.btn svg { width: 14px; height: 14px; fill: currentColor; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.kbd {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ====== Sidebar (DB Explorer) ====== */
+.sidebar {
+  grid-area: sidebar;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+.sidebar-header h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.sidebar-header .btn { padding: 3px 8px; font-size: 11px; }
+
+.tree { padding: 4px 0; }
+.tree-node { user-select: none; }
+.tree-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background 0.1s;
+}
+.tree-label:hover { background: var(--bg-hover); color: var(--text-primary); }
+.tree-label .icon { font-size: 12px; width: 16px; text-align: center; flex-shrink: 0; }
+.tree-label .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-label .badge {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.tree-children { display: none; }
+.tree-node.open > .tree-children { display: block; }
+.tree-children .tree-label { padding-left: 28px; }
+.tree-children .tree-children .tree-label { padding-left: 42px; }
+.tree-children .tree-children .tree-children .tree-label { padding-left: 56px; font-size: 12px; }
+.tree-label.schema-label .icon { color: var(--purple); }
+.tree-label.table-label .icon { color: var(--orange); }
+.tree-label.column-label { cursor: default; }
+.tree-label.column-label .icon { color: var(--text-muted); font-size: 11px; }
+.tree-label.column-label .col-type {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ====== Main Area ====== */
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+/* Editor Area */
+.editor-area {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+.editor-toolbar .status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.editor-wrapper {
+  height: 220px;
+  position: relative;
+}
+.editor-wrapper .CodeMirror {
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Resize handle */
+.resize-handle {
+  height: 5px;
+  background: var(--bg-secondary);
+  cursor: row-resize;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.resize-handle:hover, .resize-handle.active { background: var(--accent); }
+.resize-handle::after {
+  content: '';
+  width: 40px;
+  height: 2px;
+  background: var(--border-light);
+  border-radius: 2px;
+}
+
+/* Results Area */
+.results-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.results-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.results-header .tab {
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.results-header .tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+.results-header .tab.active { color: var(--text-primary); background: var(--bg-active); }
+.results-header .result-info {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.results-content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* Results Table */
+.results-table-wrapper {
+  overflow: auto;
+  height: 100%;
+}
+table.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+table.results-table thead { position: sticky; top: 0; z-index: 5; }
+table.results-table th {
+  background: var(--bg-tertiary);
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+table.results-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  white-space: nowrap;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table.results-table tr:hover td { background: var(--bg-hover); }
+table.results-table td.null-val { color: var(--text-muted); font-style: italic; }
+
+/* Message panel */
+.results-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+.results-message .msg-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.results-message .msg-text.error {
+  color: var(--red);
+  background: var(--red-dim);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(248,81,73,0.3);
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  white-space: pre-wrap;
+  max-width: 100%;
+  overflow: auto;
+}
+.results-message .msg-text.success {
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(63,185,80,0.3);
+}
+
+/* ====== Exercises Panel ====== */
+.exercises-panel {
+  grid-area: exercises;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.exercises-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+.exercises-header h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.exercises-filter {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.exercises-filter .filter-btn {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.exercises-filter .filter-btn:hover,
+.exercises-filter .filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.exercises-list { flex: 1; padding: 4px 0; }
+.exercise-card {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.exercise-card:hover { background: var(--bg-hover); }
+.exercise-card.active { background: var(--bg-active); border-left: 3px solid var(--accent); }
+.exercise-card .ex-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.exercise-card .ex-id {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+.exercise-card .ex-id.part-a { background: #1f3a5f; color: var(--accent); }
+.exercise-card .ex-id.part-b { background: #3b2560; color: var(--purple); }
+.exercise-card .ex-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.exercise-card .ex-db {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: auto;
+  font-family: var(--font-mono);
+}
+.exercise-card .ex-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  white-space: pre-line;
+  margin-top: 6px;
+}
+.exercise-card .ex-hint {
+  display: none;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.exercise-card.show-hint .ex-hint { display: block; }
+.exercise-card .ex-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.exercise-card .ex-actions .btn { padding: 3px 8px; font-size: 11px; }
+
+/* ====== CSV Import Modal ====== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 480px;
+  max-width: 90vw;
+  box-shadow: var(--shadow);
+}
+.modal h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+.modal .form-group {
+  margin-bottom: 14px;
+}
+.modal label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.modal input[type="text"],
+.modal select {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+}
+.modal input[type="text"]:focus,
+.modal select:focus { border-color: var(--accent); }
+.modal input[type="file"] {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.modal input[type="file"]::file-selector-button {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* ====== Loading spinner ====== */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ====== Scrollbars ====== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* ====== Responsive ====== */
+@media (max-width: 1100px) {
+  .app { grid-template-columns: 1fr; grid-template-areas: "header" "main"; }
+  .sidebar, .exercises-panel { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+      SQL Workbench
+    </div>
+    <div class="db-selector">
+      <label for="db-select">Database:</label>
+      <select id="db-select"></select>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="btn-import" title="Import CSV">
+        <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+        Import CSV
+      </button>
+      <button class="btn" id="btn-export" title="Export results as CSV">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar: DB Explorer -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h3>Database Explorer</h3>
+      <button class="btn" id="btn-refresh-tree" title="Refresh">
+        <svg viewBox="0 0 24 24" width="12" height="12"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </button>
+    </div>
+    <div class="tree" id="db-tree"></div>
+  </aside>
+
+  <!-- Main: Editor + Results -->
+  <main class="main">
+    <div class="editor-area">
+      <div class="editor-toolbar">
+        <button class="btn btn-primary" id="btn-run">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Run
+          <span class="kbd">Ctrl+Enter</span>
+        </button>
+        <button class="btn" id="btn-format" title="Format selection">
+          <svg viewBox="0 0 24 24"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z"/></svg>
+          Format
+        </button>
+        <button class="btn" id="btn-clear" title="Clear editor">Clear</button>
+        <span class="status" id="editor-status">Ready</span>
+      </div>
+      <div class="editor-wrapper">
+        <textarea id="sql-editor"></textarea>
+      </div>
+    </div>
+
+    <div class="resize-handle" id="resize-handle"></div>
+
+    <div class="results-area">
+      <div class="results-header">
+        <div class="tab active" data-tab="results">Results</div>
+        <div class="tab" data-tab="messages">Messages</div>
+        <span class="result-info" id="result-info"></span>
+      </div>
+      <div class="results-content" id="results-content">
+        <div class="results-message">
+          <div class="msg-text">
+            Write a SQL query and press <strong>Ctrl+Enter</strong> to execute.<br>
+            Select a database from the dropdown above.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Exercises Panel -->
+  <aside class="exercises-panel">
+    <div class="exercises-header">
+      <h3>SQL Exercises</h3>
+    </div>
+    <div class="exercises-filter">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="A">Part A (Base)</button>
+      <button class="filter-btn" data-filter="B">Part B (Advanced)</button>
+    </div>
+    <div class="exercises-list" id="exercises-list"></div>
+  </aside>
+</div>
+
+<!-- CSV Import Modal -->
+<div class="modal-overlay" id="csv-modal">
+  <div class="modal">
+    <h2>Import CSV File</h2>
+    <div class="form-group">
+      <label for="csv-db">Database</label>
+      <select id="csv-db"></select>
+    </div>
+    <div class="form-group">
+      <label for="csv-schema">Schema</label>
+      <input type="text" id="csv-schema" value="public" placeholder="public">
+    </div>
+    <div class="form-group">
+      <label for="csv-table">Table Name</label>
+      <input type="text" id="csv-table" placeholder="my_table">
+    </div>
+    <div class="form-group">
+      <label for="csv-mode">Mode</label>
+      <select id="csv-mode">
+        <option value="create">Create new table (DROP if exists)</option>
+        <option value="append">Append to existing table</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="csv-file">CSV File</label>
+      <input type="file" id="csv-file" accept=".csv,.tsv,.txt">
+    </div>
+    <div id="csv-feedback" style="font-size:13px; margin-top:8px;"></div>
+    <div class="modal-actions">
+      <button class="btn" id="csv-cancel">Cancel</button>
+      <button class="btn btn-primary" id="csv-submit">Import</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// State
+// ============================================================
+let editor;
+let currentDb = 'crud_db';
+let exercises = [];
+let lastResult = null;
+let isRunning = false;
+
+// ============================================================
+// Init
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  initEditor();
+  loadDatabases();
+  loadExercises();
+  initResizeHandle();
+  initEventListeners();
+});
+
+// ============================================================
+// CodeMirror Editor
+// ============================================================
+function initEditor() {
+  editor = CodeMirror.fromTextArea(document.getElementById('sql-editor'), {
+    mode: 'text/x-pgsql',
+    theme: 'dracula',
+    lineNumbers: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    indentWithTabs: false,
+    tabSize: 2,
+    indentUnit: 2,
+    lineWrapping: false,
+    placeholder: 'SELECT * FROM ...',
+    extraKeys: {
+      'Ctrl-Enter': runQuery,
+      'Cmd-Enter': runQuery,
+      'Ctrl-Space': 'autocomplete',
+    },
+    hintOptions: {
+      completeSingle: false,
+    },
+  });
+  editor.setValue('-- Write your SQL query here\nSELECT version();\n');
+}
+
+// ============================================================
+// Database selector
+// ============================================================
+function loadDatabases() {
+  fetch('/api/databases')
+    .then(r => r.json())
+    .then(dbs => {
+      const sel = document.getElementById('db-select');
+      const csvSel = document.getElementById('csv-db');
+      sel.innerHTML = '';
+      csvSel.innerHTML = '';
+      dbs.forEach(db => {
+        sel.innerHTML += `<option value="${db}" ${db === currentDb ? 'selected' : ''}>${db}</option>`;
+        csvSel.innerHTML += `<option value="${db}">${db}</option>`;
+      });
+      sel.addEventListener('change', e => {
+        currentDb = e.target.value;
+        refreshTree();
+      });
+      refreshTree();
+    });
+}
+
+// ============================================================
+// DB Explorer Tree
+// ============================================================
+function refreshTree() {
+  const container = document.getElementById('db-tree');
+  container.innerHTML = '<div style="padding:14px;color:var(--text-muted);font-size:13px;">Loading...</div>';
+
+  fetch(`/api/explore/${currentDb}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        container.innerHTML = `<div style="padding:14px;color:var(--red);font-size:13px;">${data.error}</div>`;
+        return;
+      }
+      container.innerHTML = '';
+      for (const [schema, tables] of Object.entries(data)) {
+        const schemaNode = makeTreeNode(
+          `<span class="icon">&#128193;</span><span class="name">${schema}</span><span class="badge">${Object.keys(tables).length}</span>`,
+          'schema-label'
+        );
+        const schemaChildren = document.createElement('div');
+        schemaChildren.className = 'tree-children';
+
+        for (const [table, columns] of Object.entries(tables)) {
+          const tableNode = makeTreeNode(
+            `<span class="icon">&#9638;</span><span class="name">${table}</span><span class="badge">${columns.length}</span>`,
+            'table-label'
+          );
+          // Double-click inserts table name into editor
+          tableNode.querySelector('.tree-label').addEventListener('dblclick', () => {
+            const fq = schema === 'public' ? table : `${schema}.${table}`;
+            editor.replaceSelection(fq);
+            editor.focus();
+          });
+
+          const tableChildren = document.createElement('div');
+          tableChildren.className = 'tree-children';
+
+          columns.forEach(col => {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'tree-node';
+            const nullable = col.nullable === 'YES' ? '?' : '';
+            colDiv.innerHTML = `<div class="tree-label column-label">
+              <span class="icon">#</span>
+              <span class="name">${col.name}</span>
+              <span class="col-type">${col.type}${nullable}</span>
+            </div>`;
+            // Click inserts column name
+            colDiv.querySelector('.tree-label').addEventListener('dblclick', () => {
+              editor.replaceSelection(col.name);
+              editor.focus();
+            });
+            tableChildren.appendChild(colDiv);
+          });
+
+          tableNode.appendChild(tableChildren);
+          schemaChildren.appendChild(tableNode);
+        }
+
+        schemaNode.appendChild(schemaChildren);
+        container.appendChild(schemaNode);
+        // Auto-open first schema
+        schemaNode.classList.add('open');
+      }
+    })
+    .catch(err => {
+      container.innerHTML = `<div style="padding:14px;color:var(--red);font-size:13px;">Failed to connect: ${err.message}</div>`;
+    });
+}
+
+function makeTreeNode(labelHTML, extraClass = '') {
+  const node = document.createElement('div');
+  node.className = 'tree-node';
+  const label = document.createElement('div');
+  label.className = `tree-label ${extraClass}`;
+  label.innerHTML = labelHTML;
+  label.addEventListener('click', () => {
+    node.classList.toggle('open');
+  });
+  node.appendChild(label);
+  return node;
+}
+
+// ============================================================
+// Run Query
+// ============================================================
+function runQuery() {
+  if (isRunning) return;
+  // Use selection if available, else full text
+  let sql = editor.getSelection();
+  if (!sql.trim()) sql = editor.getValue();
+  if (!sql.trim()) return;
+
+  isRunning = true;
+  setStatus('Running...', true);
+
+  fetch('/api/query', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ database: currentDb, sql: sql }),
+  })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      isRunning = false;
+      if (!ok || data.error) {
+        showError(data.error || 'Unknown error');
+        setStatus('Error', false);
+        return;
+      }
+      lastResult = data;
+      if (data.columns && data.columns.length > 0) {
+        showTable(data.columns, data.rows);
+        setStatus(`${data.rowcount} row(s) returned`, false);
+        document.getElementById('result-info').textContent = `${data.rowcount} rows`;
+      } else {
+        showSuccess(data.message || 'Query executed successfully.');
+        setStatus('Done', false);
+        document.getElementById('result-info').textContent = '';
+      }
+    })
+    .catch(err => {
+      isRunning = false;
+      showError(err.message);
+      setStatus('Error', false);
+    });
+}
+
+function setStatus(text, loading) {
+  const el = document.getElementById('editor-status');
+  if (loading) {
+    el.innerHTML = `<span class="spinner"></span> ${text}`;
+  } else {
+    el.textContent = text;
+  }
+}
+
+function showTable(columns, rows) {
+  const container = document.getElementById('results-content');
+  let html = '<div class="results-table-wrapper"><table class="results-table"><thead><tr>';
+  html += '<th>#</th>';
+  columns.forEach(c => { html += `<th>${escapeHtml(c)}</th>`; });
+  html += '</tr></thead><tbody>';
+  rows.forEach((row, i) => {
+    html += '<tr>';
+    html += `<td style="color:var(--text-muted)">${i + 1}</td>`;
+    row.forEach(val => {
+      if (val === null) {
+        html += '<td class="null-val">NULL</td>';
+      } else {
+        html += `<td>${escapeHtml(String(val))}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function showError(msg) {
+  document.getElementById('results-content').innerHTML =
+    `<div class="results-message"><div class="msg-text error">${escapeHtml(msg)}</div></div>`;
+}
+
+function showSuccess(msg) {
+  document.getElementById('results-content').innerHTML =
+    `<div class="results-message"><div class="msg-text success">${escapeHtml(msg)}</div></div>`;
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(s));
+  return div.innerHTML;
+}
+
+// ============================================================
+// Export CSV
+// ============================================================
+function exportCSV() {
+  const sql = editor.getSelection() || editor.getValue();
+  if (!sql.trim()) return;
+
+  fetch('/api/export_csv', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ database: currentDb, sql: sql }),
+  })
+    .then(r => {
+      if (!r.ok) return r.json().then(d => { throw new Error(d.error); });
+      return r.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'query_result.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(err => showError(err.message));
+}
+
+// ============================================================
+// Import CSV Modal
+// ============================================================
+function openImportModal() {
+  document.getElementById('csv-modal').classList.add('show');
+  document.getElementById('csv-feedback').textContent = '';
+  document.getElementById('csv-table').value = '';
+  document.getElementById('csv-file').value = '';
+}
+
+function closeImportModal() {
+  document.getElementById('csv-modal').classList.remove('show');
+}
+
+function submitCSVImport() {
+  const db = document.getElementById('csv-db').value;
+  const schema = document.getElementById('csv-schema').value || 'public';
+  const table = document.getElementById('csv-table').value.trim();
+  const mode = document.getElementById('csv-mode').value;
+  const fileInput = document.getElementById('csv-file');
+  const feedback = document.getElementById('csv-feedback');
+
+  if (!table) { feedback.innerHTML = '<span style="color:var(--red)">Table name is required.</span>'; return; }
+  if (!fileInput.files.length) { feedback.innerHTML = '<span style="color:var(--red)">Select a CSV file.</span>'; return; }
+
+  const formData = new FormData();
+  formData.append('database', db);
+  formData.append('schema', schema);
+  formData.append('table_name', table);
+  formData.append('mode', mode);
+  formData.append('file', fileInput.files[0]);
+
+  feedback.innerHTML = '<span class="spinner"></span> Importing...';
+
+  fetch('/api/import_csv', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      if (!ok || data.error) {
+        feedback.innerHTML = `<span style="color:var(--red)">${escapeHtml(data.error)}</span>`;
+      } else {
+        feedback.innerHTML = `<span style="color:var(--green)">${escapeHtml(data.message)}</span>`;
+        refreshTree();
+        setTimeout(closeImportModal, 1500);
+      }
+    })
+    .catch(err => {
+      feedback.innerHTML = `<span style="color:var(--red)">${escapeHtml(err.message)}</span>`;
+    });
+}
+
+// ============================================================
+// Exercises
+// ============================================================
+function loadExercises() {
+  fetch('/api/exercises')
+    .then(r => r.json())
+    .then(data => {
+      exercises = data;
+      renderExercises('all');
+    });
+}
+
+function renderExercises(filter) {
+  const container = document.getElementById('exercises-list');
+  container.innerHTML = '';
+
+  const filtered = filter === 'all' ? exercises : exercises.filter(e => e.id.startsWith(filter));
+
+  filtered.forEach(ex => {
+    const card = document.createElement('div');
+    card.className = 'exercise-card';
+    card.dataset.id = ex.id;
+
+    const partClass = ex.id.startsWith('A') ? 'part-a' : 'part-b';
+    card.innerHTML = `
+      <div class="ex-header">
+        <span class="ex-id ${partClass}">${ex.id}</span>
+        <span class="ex-title">${escapeHtml(ex.title)}</span>
+        <span class="ex-db">${ex.db}</span>
+      </div>
+      <div class="ex-desc">${escapeHtml(ex.description)}</div>
+      <div class="ex-hint">${escapeHtml(ex.hint || '')}</div>
+      <div class="ex-actions">
+        <button class="btn btn-accent load-ex-btn" title="Load exercise into editor">Load</button>
+        <button class="btn hint-btn" title="Toggle hint">Hint</button>
+      </div>
+    `;
+
+    card.querySelector('.load-ex-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      loadExercise(ex);
+    });
+    card.querySelector('.hint-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      card.classList.toggle('show-hint');
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function loadExercise(ex) {
+  // Switch database
+  currentDb = ex.db;
+  document.getElementById('db-select').value = ex.db;
+  refreshTree();
+
+  // Set editor content
+  const comment = `-- Exercise ${ex.id}: ${ex.title}\n-- Database: ${ex.db}\n-- ${ex.description.split('\n').join('\n-- ')}\n\n`;
+  editor.setValue(comment);
+  editor.setCursor(editor.lineCount(), 0);
+  editor.focus();
+
+  // Highlight active card
+  document.querySelectorAll('.exercise-card').forEach(c => c.classList.remove('active'));
+  const card = document.querySelector(`.exercise-card[data-id="${ex.id}"]`);
+  if (card) card.classList.add('active');
+}
+
+// ============================================================
+// Resize Handle
+// ============================================================
+function initResizeHandle() {
+  const handle = document.getElementById('resize-handle');
+  const editorWrapper = document.querySelector('.editor-wrapper');
+  let startY, startHeight;
+
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startY = e.clientY;
+    startHeight = editorWrapper.offsetHeight;
+    handle.classList.add('active');
+
+    const onMove = ev => {
+      const diff = ev.clientY - startY;
+      const newH = Math.max(80, Math.min(startHeight + diff, window.innerHeight - 200));
+      editorWrapper.style.height = newH + 'px';
+      editor.refresh();
+    };
+    const onUp = () => {
+      handle.classList.remove('active');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+// ============================================================
+// Event Listeners
+// ============================================================
+function initEventListeners() {
+  document.getElementById('btn-run').addEventListener('click', runQuery);
+  document.getElementById('btn-export').addEventListener('click', exportCSV);
+  document.getElementById('btn-import').addEventListener('click', openImportModal);
+  document.getElementById('csv-cancel').addEventListener('click', closeImportModal);
+  document.getElementById('csv-submit').addEventListener('click', submitCSVImport);
+  document.getElementById('btn-refresh-tree').addEventListener('click', refreshTree);
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    editor.setValue('');
+    editor.focus();
+  });
+  document.getElementById('btn-format').addEventListener('click', () => {
+    // Basic SQL formatting: uppercase keywords
+    let sql = editor.getValue();
+    const keywords = ['SELECT','FROM','WHERE','AND','OR','NOT','IN','JOIN','LEFT','RIGHT','FULL',
+      'INNER','OUTER','CROSS','ON','GROUP BY','ORDER BY','HAVING','LIMIT','OFFSET','INSERT INTO',
+      'VALUES','UPDATE','SET','DELETE FROM','CREATE','DROP','ALTER','TABLE','INDEX','AS','DISTINCT',
+      'CASE','WHEN','THEN','ELSE','END','UNION','ALL','EXISTS','BETWEEN','LIKE','IS','NULL',
+      'WITH','RECURSIVE','OVER','PARTITION BY','ROWS','RANGE','BETWEEN','UNBOUNDED','PRECEDING',
+      'FOLLOWING','CURRENT ROW','RANK','DENSE_RANK','ROW_NUMBER','NTILE','LAG','LEAD','SUM',
+      'AVG','COUNT','MIN','MAX','COALESCE','NULLIF','ROUND','CAST','DESC','ASC'];
+    // Sort by length (longest first) to avoid partial replacements
+    keywords.sort((a, b) => b.length - a.length);
+    keywords.forEach(kw => {
+      const re = new RegExp('\\b' + kw.replace(/ /g, '\\s+') + '\\b', 'gi');
+      sql = sql.replace(re, kw);
+    });
+    editor.setValue(sql);
+  });
+
+  // Exercise filter buttons
+  document.querySelectorAll('.exercises-filter .filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.exercises-filter .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderExercises(btn.dataset.filter);
+    });
+  });
+
+  // Tab switching in results
+  document.querySelectorAll('.results-header .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.results-header .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Close modal on overlay click
+  document.getElementById('csv-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('csv-modal')) closeImportModal();
+  });
+
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeImportModal();
+  });
+}
+</script>
+</body>
+</html>
