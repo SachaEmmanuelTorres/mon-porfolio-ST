@@ -1,4 +1,4 @@
-# Expert Data Modeling & ETL — Préparation Morgan Stanley HackerRank
+
 
 > **Objectif** : Maîtriser la modélisation dimensionnelle, relationnelle, les SCD, les concepts ETL/ELT, les outils Talend/Informatica, la gouvernance et l'architecture de données pour un test de 60 minutes.
 

@@ -1,4 +1,4 @@
-# Expert Python — Préparation Morgan Stanley HackerRank
+
 
 > **Objectif** : Réviser les compétences Python essentielles pour un test de 60 minutes axé sur le data engineering, l'automatisation et l'analyse de grands ensembles de données.
 

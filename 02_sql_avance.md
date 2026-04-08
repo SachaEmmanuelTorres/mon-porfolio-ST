@@ -1,4 +1,4 @@
-# Expert SQL — Préparation Morgan Stanley HackerRank
+
 
 > **Objectif** : Réviser les concepts SQL avancés pour un test de 60 minutes axé sur l'entrepôt de données Snowflake, les transformations et l'optimisation de requêtes.
 

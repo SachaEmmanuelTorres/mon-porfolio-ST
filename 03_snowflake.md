@@ -1,4 +1,4 @@
-# Expert Snowflake — Préparation Morgan Stanley HackerRank
+
 
 > **Objectif** : Maîtriser l'architecture Snowflake, le SQL spécifique, le chargement de données, les streams/tasks, l'API REST et l'optimisation pour un test de 60 minutes.
 
