@@ -127,3 +127,32 @@ __pycache__/
 pgdata/
 pgadmin_data/
 sql/csv_data/export_*.csv
+# Python
+.env/
+__pycache__/
+*.py[cod]
+*.class
+venv/
+ENV/
+
+# ChromaDB (Données locales)
+chroma_db/
+chroma_v2_db/
+
+# Modèles LLM (Plusieurs Go, ne pas uploader)
+models/
+
+# Logs et temporaires
+*.log
+presentation_temp.md
+presentation_final.md
+presentation_final_v2.md
+
+# OS
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets
+script-interaction-model/token_hugging.md
+script-interaction-model/token_langchain.md

@@ -1,0 +1,14 @@
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y     build-essential     curl     && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir     marimo     langchain     chromadb     sentence-transformers     flask
+
+RUN mkdir -p /app/knowledge /app/models
+
+EXPOSE 5000
+
+# Utilisation de marimo pour piloter le RAG
+CMD ["marimo", "run", "app.py", "--host", "0.0.0.0", "--port", "5000"]

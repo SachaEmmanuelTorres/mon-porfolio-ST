@@ -1,0 +1,24 @@
+[project]
+name = "script-interaction-model"
+version = "0.1.0"
+description = "Scripts pour interagir avec les modèles Ollama et Llama.cpp"
+readme = "README.md"
+authors = [
+    { name = "SachaEmmanuelTorres", email = "redcaribou34@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "asyncio>=4.0.0",
+    "chromadb>=1.5.8",
+    "datasets>=4.8.5",
+    "httpx>=0.27.0",
+    "huggingface-hub>=1.12.2",
+    "langchain-community>=0.4.1",
+    "langchain-huggingface>=1.2.2",
+    "marimo>=0.23.4",
+    "mcp>=1.0.0",
+    "ollama>=0.6.2",
+    "openai>=2.33.0",
+    "pydantic-ai>=1.88.0",
+    "transformers>=5.7.0",
+]
