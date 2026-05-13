@@ -1,0 +1,6 @@
+FROM fedora:40
+RUN dnf install -y xfce4 xfce4-terminal tigervnc-server novnc python3-pip git && dnf clean all
+WORKDIR /root
+RUN mkdir -p .vnc && echo "password" | vncpasswd -f > .vnc/passwd && chmod 600 .vnc/passwd
+EXPOSE 6080
+CMD vncserver :1 -geometry 1280x800 && /usr/share/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 6080

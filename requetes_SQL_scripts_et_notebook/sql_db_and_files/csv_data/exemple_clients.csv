@@ -1,0 +1,6 @@
+client_id,nom,email,telephone,adresse,ville,pays,segment,date_inscription
+C010,Startup Zeta,contact@zeta.io,+33612345678,12 rue de la Paix,Paris,France,Standard,2024-01-15
+C011,Corp Theta,info@theta.com,+33698765432,5 avenue Foch,Lyon,France,Premium,2024-02-01
+C012,PME Iota,hello@iota.fr,,8 boulevard Haussmann,Marseille,France,Standard,2024-02-20
+C013,Groupe Kappa,contact@kappa.eu,+33611223344,,Bordeaux,France,VIP,2024-03-10
+C014,Societe Lambda,info@lambda.fr,+33699887766,15 place Bellecour,Lyon,France,Premium,
