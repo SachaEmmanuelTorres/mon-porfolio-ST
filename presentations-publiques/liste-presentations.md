@@ -8,6 +8,12 @@
 
 [https://www.youtube.com/watch?v=livgqbzDXxg&t=302s](https://www.youtube.com/watch?v=livgqbzDXxg&t=302s) 
 
+Montage en cours:
+
+video presentation winboat ou comment utiliser windows sous linux. - tournee RLQ 2026 Gatineau
+
+video presentation clickhouse RLQ du samedi a Vaudreuil Dorion Septembre 2026
+
 • Les Pinguoins du monde : 
 
 https://www.youtube.com/@Les\_Pinguoins\_Du\_Monde/streams
