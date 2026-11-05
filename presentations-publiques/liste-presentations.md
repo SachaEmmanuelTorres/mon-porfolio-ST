@@ -18,3 +18,4 @@ video presentation clickhouse RLQ du samedi a Vaudreuil Dorion Septembre 2026
 
 https://www.youtube.com/@Les\_Pinguoins\_Du\_Monde/streams
 
+reprise des stream le 14 Novembre 2026 a lóccasion des Capitole du Libre á Toulouse.
