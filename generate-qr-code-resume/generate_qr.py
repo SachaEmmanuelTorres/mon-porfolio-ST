@@ -3,11 +3,11 @@ import qrcode
 # --- CONFIGURATION ---
 # URLs directes via GitHub Pages avec les noms de fichiers exacts de votre capture d'écran
 url_cv_fr = "https://sachaemmanueltorres.github.io/mon-porfolio-ST/CV_Sacha_Torres_data_analyste_dev_python.pdf"
-#url_resume_en = "https://sachaemmanueltorres.github.io/mon-porfolio-ST/Resume_Sacha_Torres_2025_Eng_main_os.pdf"
+url_resume_en = "https://sachaemmanueltorres.github.io/mon-porfolio-ST/CV_Sacha_Torres_data_analyste_dev_python.pdf¨
 
 def creer_qr(url, nom_fichier):
     qr = qrcode.QRCode(
-        version=1,
+        version=1, 
         error_correction=qrcode.constants.ERROR_CORRECT_H,
         box_size=10,
         border=2,
